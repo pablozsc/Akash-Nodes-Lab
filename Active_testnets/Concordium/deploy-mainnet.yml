@@ -1,0 +1,89 @@
+---
+version: '2'
+services:
+  mainnet-node:
+    image: concordium/mainnet-node:latest
+    expose:
+      - port: 10000
+        proto: tcp
+        to:
+          - service: mainnet-node-collector
+      - port: 20000
+        as: 20000
+        to:
+          - global: true
+      - port: 8888
+        as: 8888
+        to:
+          - global: true
+    env:
+      - CONCORDIUM_NODE_LISTEN_PORT=8888
+      - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=5
+      - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
+      - CONCORDIUM_NODE_RPC_SERVER_ADDR=0.0.0.0
+      - CONCORDIUM_NODE_RPC_SERVER_PORT=10000
+      - CONCORDIUM_NODE_GRPC2_LISTEN_PORT=20000
+      - CONCORDIUM_NODE_GRPC2_LISTEN_ADDRESS=0.0.0.0
+      - CONCORDIUM_NODE_CONNECTION_HARD_CONNECTION_LIMIT=20
+      - CONCORDIUM_NODE_CONNECTION_THREAD_POOL_SIZE=2
+      - CONCORDIUM_NODE_CONNECTION_BOOTSTRAPPING_INTERVAL=1800
+      - CONCORDIUM_NODE_BAKER_HASKELL_RTS_FLAGS=-N2,-I0
+    args:
+      - "/concordium-node"
+      - "--config-dir=/mnt/"
+      - "--data-dir=/mnt/" 
+      - "--genesis-data-file=/mainnet-genesis.dat"
+      - "--bootstrap-node=bootstrap.mainnet.concordium.software:8888"
+
+  mainnet-node-collector:
+    image: concordium/mainnet-node:latest
+    env:
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=mainnet-akash
+      - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.mainnet.concordium.software/nodes/post
+      - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:10000
+    args:
+      - '/node-collector'
+
+profiles:
+  compute:
+    mainnet-node:
+      resources:
+        cpu:
+          units: 2
+        memory:
+          size: 4Gi
+        storage:
+          size: 45Gi
+    mainnet-node-collector:
+      resources:
+        cpu:
+          units: 2
+        memory:
+          size: 4Gi
+        storage:
+          size: 10Gi
+    
+  placement:
+    westcoast:
+      attributes:
+        host: akash
+      pricing:
+        mainnet-node: 
+          denom: uakt
+          amount: 10000
+        mainnet-node-collector: 
+          denom: uakt
+          amount: 10000
+        
+
+
+deployment:
+  mainnet-node:
+    westcoast:
+      profile: mainnet-node
+      count: 1 
+  mainnet-node-collector:
+    westcoast:
+      profile: mainnet-node-collector
+      count: 1 
