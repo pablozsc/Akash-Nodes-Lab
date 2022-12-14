@@ -5,7 +5,7 @@ services:
   testnet-node-collector:
     image: concordium/testnet-node:latest
     env:
-      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=<YOUR_NODE_NAME>
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=<YOUR-NODE-NAME>
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
       - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
@@ -15,9 +15,11 @@ services:
     image: concordium/testnet-node:latest
     expose:
       - port: 10001
-        proto: tcp
+        as: 10001
         to:
           - service: testnet-node-collector
+          - service: ssh
+          - global: true
       - port: 20001
         as: 20001
         to:
@@ -47,7 +49,7 @@ services:
   ssh:
     image: ubuntu:22.04
     env:
-      - 'SSH_PUBKEY=ssh-rsa AAAAB.....'
+      - 'SSH_PUBKEY=ssh-rsa AAAAB...'
     command:
       - "sh"
       - "-c"
@@ -77,7 +79,7 @@ profiles:
         memory:
           size: 1024Mi
         storage:
-          size: 1024Mi
+          size: 4096Mi
     testnet-node:
       resources:
         cpu:
@@ -85,7 +87,7 @@ profiles:
         memory:
           size: 4096Mi
         storage:
-          size: 10000Mi
+          size: 20000Mi
     ssh:
       resources:
         cpu:
