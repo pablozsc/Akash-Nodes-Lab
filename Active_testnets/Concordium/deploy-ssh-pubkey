@@ -1,0 +1,127 @@
+---
+version: "2.0"
+
+services:
+  testnet-node-collector:
+    image: concordium/testnet-node:latest
+    env:
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=<YOUR_NODE_NAME>
+      - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
+      - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
+    args:
+      - '/node-collector'
+  testnet-node:
+    image: concordium/testnet-node:latest
+    expose:
+      - port: 10001
+        proto: tcp
+        to:
+          - service: testnet-node-collector
+      - port: 20001
+        as: 20001
+        to:
+          - global: true
+      - port: 8889
+        as: 8889
+        to:
+          - global: true
+    env:
+      - CONCORDIUM_NODE_LISTEN_PORT=8889
+      - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=5
+      - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
+      - CONCORDIUM_NODE_RPC_SERVER_ADDR=0.0.0.0
+      - CONCORDIUM_NODE_RPC_SERVER_PORT=10001
+      - CONCORDIUM_NODE_GRPC2_LISTEN_PORT=20001
+      - CONCORDIUM_NODE_GRPC2_LISTEN_ADDRESS=0.0.0.0
+      - CONCORDIUM_NODE_CONNECTION_HARD_CONNECTION_LIMIT=20
+      - CONCORDIUM_NODE_CONNECTION_THREAD_POOL_SIZE=2
+      - CONCORDIUM_NODE_CONNECTION_BOOTSTRAPPING_INTERVAL=1800
+      - CONCORDIUM_NODE_BAKER_HASKELL_RTS_FLAGS=-N2,-I0
+    args:
+      - "/concordium-node"
+      - "--config-dir=/mnt/"
+      - "--data-dir=/mnt/" 
+      - "--genesis-data-file=/testnet-genesis.dat"
+      - "--bootstrap-node=bootstrap.testnet.concordium.com:8888"
+  ssh:
+    image: ubuntu:22.04
+    env:
+      - 'SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDTyILdxqYLPlhz7XZ3OSXv/nyNmHgPbDX3FwCUYjzAmG1YRLFb9R4q3VIDYh7pgShA5RJLUFeGtofp+ywxfZyHIhI5lbDMI80YPKDnOtt43thosPizldnJn4e99rfpiQr64Sdsh/jVz2zbBLnpBosoKlcV+okTKRZNpN6EU1Ujy5Ea6GKZXQlSt6Xi5xXyIHD4T5PV5XkkE3nA1DsPYNblXhLTxP/ArzOtFkyqzD44F6P+1TcaUM2IDkPe9mzFbc1nxLbdlqmZCZfyiDZppJ6fw+5dpg2k4pD/VrMraZUlF9wwqa2sWQVCwZeY14e3Qg0zkF64rgKd4aivI+L1mJSCeA6zSjkYiIo1ylnPshTTpSK3WSvz5raCAqZcqCZ95+YyObhbHGxqkPSpgGHpscJ6nDY4H8hvMW2/7zc2OidLK8j/a1c1smeAJKHpGeI8koXKz68HEURyW/FMvS+LpveLGjb/TX6nZGvq4oWEVk4PTg0jEH0gA+pe6UEgaVYK9W8= pablo\pablo@pablo'
+    command:
+      - "sh"
+      - "-c"
+    args:
+      - 'apt-get update;
+      apt-get install -y --no-install-recommends -- ssh;
+      mkdir -p -m0755 /run/sshd;
+      mkdir -m700 ~/.ssh;
+      echo "$SSH_PUBKEY" | tee ~/.ssh/authorized_keys;
+      chmod 0600 ~/.ssh/authorized_keys;
+      ls -lad ~ ~/.ssh ~/.ssh/authorized_keys;
+      md5sum ~/.ssh/authorized_keys;
+      exec /usr/sbin/sshd -D'
+    expose:
+      # SSH
+      - port: 22
+        as: 22
+        to:
+          - global: true
+
+profiles:
+  compute:
+    testnet-node-collector:
+      resources:
+        cpu:
+          units: 1.0
+        memory:
+          size: 1024Mi
+        storage:
+          size: 1024Mi
+    testnet-node:
+      resources:
+        cpu:
+          units: 1.0
+        memory:
+          size: 4096Mi
+        storage:
+          size: 10000Mi
+    ssh:
+      resources:
+        cpu:
+          units: 1.0
+        memory:
+          size: 1024Mi
+        storage:
+          size: 1024Mi
+  placement:
+    akash:
+      #attributes:
+      #  host: akash
+      #signedBy:
+      #  anyOf:
+      #    - "akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63"
+      pricing:
+        ssh:
+          denom: uakt
+          amount: 10000
+        testnet-node:
+          denom: uakt
+          amount: 10000
+        testnet-node-collector:
+          denom: uakt
+          amount: 10000
+
+deployment:
+  testnet-node-collector:
+    akash:
+      profile: testnet-node
+      count: 1 
+  testnet-node:
+    akash:
+      profile: testnet-node
+      count: 1 
+  ssh:
+    akash:
+      profile: ssh
+      count: 1
