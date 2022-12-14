@@ -47,7 +47,7 @@ services:
   ssh:
     image: ubuntu:22.04
     env:
-      - 'SSH_PUBKEY=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDTyILdxqYLPlhz7XZ3OSXv/nyNmHgPbDX3FwCUYjzAmG1YRLFb9R4q3VIDYh7pgShA5RJLUFeGtofp+ywxfZyHIhI5lbDMI80YPKDnOtt43thosPizldnJn4e99rfpiQr64Sdsh/jVz2zbBLnpBosoKlcV+okTKRZNpN6EU1Ujy5Ea6GKZXQlSt6Xi5xXyIHD4T5PV5XkkE3nA1DsPYNblXhLTxP/ArzOtFkyqzD44F6P+1TcaUM2IDkPe9mzFbc1nxLbdlqmZCZfyiDZppJ6fw+5dpg2k4pD/VrMraZUlF9wwqa2sWQVCwZeY14e3Qg0zkF64rgKd4aivI+L1mJSCeA6zSjkYiIo1ylnPshTTpSK3WSvz5raCAqZcqCZ95+YyObhbHGxqkPSpgGHpscJ6nDY4H8hvMW2/7zc2OidLK8j/a1c1smeAJKHpGeI8koXKz68HEURyW/FMvS+LpveLGjb/TX6nZGvq4oWEVk4PTg0jEH0gA+pe6UEgaVYK9W8= pablo\pablo@pablo'
+      - 'SSH_PUBKEY=ssh-rsa AAAAB.....'
     command:
       - "sh"
       - "-c"
