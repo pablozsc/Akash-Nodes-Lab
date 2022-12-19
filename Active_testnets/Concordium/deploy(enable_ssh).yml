@@ -9,9 +9,9 @@ services:
         to:
           - global: true
       - port: 10001
-        proto: tcp
+        as: 10001
         to:
-          - service: testnet-node-collector
+          - global: true
       - port: 20001
         as: 20001
         to:
