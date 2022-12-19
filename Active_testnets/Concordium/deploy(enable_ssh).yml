@@ -12,6 +12,7 @@ services:
         as: 10001
         to:
           - global: true
+          - service: testnet-node-collector
       - port: 20001
         as: 20001
         to:
@@ -21,7 +22,7 @@ services:
         to:
           - global: true
     env:
-      - MY_ROOT_PASSWORD=111111
+      - MY_ROOT_PASSWORD=
       - CONCORDIUM_NODE_LISTEN_PORT=8889
       - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=5
       - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
@@ -44,8 +45,8 @@ services:
   testnet-node-collector:
     image: concordium/testnet-node:latest
     env:
-      - MY_ROOT_PASSWORD=111111
-      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=<YOUR_NODE_NAME>
+      - MY_ROOT_PASSWORD=
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-1
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
       - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
@@ -67,9 +68,9 @@ profiles:
     testnet-node:
       resources:
         cpu:
-          units: 2
+          units: 4
         memory:
-          size: 4Gi
+          size: 8Gi
         storage:
           size: 45Gi
     testnet-node-collector:
