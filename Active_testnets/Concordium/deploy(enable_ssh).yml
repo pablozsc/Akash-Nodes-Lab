@@ -13,8 +13,9 @@ services:
         to:
           - global: true
       - port: 10001
-        proto: tcp
+        as: 10001
         to:
+          - global: true
           - service: testnet-node-collector
       - port: 20001
         as: 20001
