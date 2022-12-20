@@ -26,7 +26,7 @@ services:
         to:
           - global: true
     env:
-      - MY_ROOT_PASSWORD=111111
+      - MY_ROOT_PASSWORD=
       - CONCORDIUM_NODE_LISTEN_PORT=8889
       - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=20
       - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=20
@@ -51,7 +51,7 @@ services:
   testnet-node-collector:
     image: concordium/testnet-node:latest
     env:
-      - MY_ROOT_PASSWORD=111111
+      - MY_ROOT_PASSWORD=
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-2
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
