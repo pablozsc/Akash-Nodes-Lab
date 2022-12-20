@@ -3,26 +3,30 @@ version: '2'
 services:
   testnet-node:
     image: concordium/testnet-node:latest
+    params:
+      storage:
+        data:
+          mount: /mnt
     expose:
       - port: 22
         as: 22
         to:
           - global: true
       - port: 10001
-        as: 10001
+        proto: tcp
         to:
-          - global: true
           - service: testnet-node-collector
       - port: 20001
         as: 20001
         to:
           - global: true
+          - service: testnet-node-collector
       - port: 8889
         as: 8889
         to:
           - global: true
     env:
-      - MY_ROOT_PASSWORD=
+      - MY_ROOT_PASSWORD=111111
       - CONCORDIUM_NODE_LISTEN_PORT=8889
       - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=5
       - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
@@ -34,19 +38,21 @@ services:
       - CONCORDIUM_NODE_CONNECTION_THREAD_POOL_SIZE=2
       - CONCORDIUM_NODE_CONNECTION_BOOTSTRAPPING_INTERVAL=1800
       - CONCORDIUM_NODE_BAKER_HASKELL_RTS_FLAGS=-N2,-I0
+      - CONCORDIUM_NODE_GRPC2_ENDPOINT_CONFIG=/mnt/endpoints.toml
     command:
       - "bash"
       - "-c"
     args:
       - 'apt-get update && apt-get upgrade -y ;
        apt-get install ssh -y ; echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; (echo ${MY_ROOT_PASSWORD}; echo ${MY_ROOT_PASSWORD}) | passwd root && service ssh restart;
+       echo -e "get_finalized_blocks = true\nget_blocks = true\nget_account_list = true\nget_account_info = false\nget_module_list = true\nget_module_source = true\nget_instance_list = true\nget_instance_info = true\nget_instance_state = true\ninstance_state_lookup = true\nget_next_account_sequence_number = true\nget_consensus_info = true\nget_ancestors = true\nget_block_item_status = true\ninvoke_instance = true\nget_cryptographic_parameters = true\nget_block_info = true\nget_baker_list = true\nget_pool_info = true\nget_passive_delegation_info = true\nget_blocks_at_height = true\nget_tokenomics_info = true\nget_pool_delegators = true\nget_pool_delegators_reward_period = true\nget_passive_delegators = true\nget_passive_delegators_reward_period = true\nget_branches = true\nget_election_info = true\nget_identity_providers = true\nget_anonymity_revokers = true\nget_account_non_finalized_transactions = true\nget_block_transaction_events = true\nget_block_special_events = true\nget_block_pending_updates = true\nget_next_update_sequence_numbers = true\nget_block_chain_parameters = true\nget_block_finalization_summary = true\nshutdown = false\npeer_connect = true\npeer_disconnect = true\nget_banned_peers = true\nban_peer = true\nunban_peer = true\ndump_start = false\ndump_stop = false\nget_peers_info = true\nget_node_info = true\nsend_block_item = true\nget_account_transaction_sign_hash = true\nget_block_items = true" >> /mnt/endpoints.toml;
        /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/testnet-genesis.dat --bootstrap-node=bootstrap.testnet.concordium.com:8888'
 
   testnet-node-collector:
     image: concordium/testnet-node:latest
     env:
-      - MY_ROOT_PASSWORD=
-      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-1
+      - MY_ROOT_PASSWORD=111111
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-2
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
       - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
@@ -72,7 +78,11 @@ profiles:
         memory:
           size: 8Gi
         storage:
-          size: 45Gi
+          - name: data
+            size: 50Gi
+            attributes:
+              persistent: true
+              class: beta1
     testnet-node-collector:
       resources:
         cpu:
@@ -93,8 +103,6 @@ profiles:
         testnet-node-collector: 
           denom: uakt
           amount: 10000
-        
-
 
 deployment:
   testnet-node:
