@@ -1,0 +1,121 @@
+---
+version: '2'
+
+endpoints:
+ grpc2:
+   kind: ip
+
+services:
+  mainnet-node:
+    image: concordium/mainnet-node:latest
+    params:
+      storage:
+        data:
+          mount: /mnt
+    expose:
+      - port: 22
+        as: 22
+        to:
+          - global: true
+      - port: 10000
+        as: 10000
+        to:
+          - service: mainnet-node-collector
+      - port: 20000
+        as: 20000
+        to:
+          - global: true
+            ip: "grpc2"
+      - port: 8888
+        as: 8888
+        to:
+          - global: true
+    env:
+      - MY_ROOT_PASSWORD=
+      - CONCORDIUM_NODE_LISTEN_PORT=8888
+      - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=10
+      - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
+      - CONCORDIUM_NODE_RPC_SERVER_ADDR=0.0.0.0
+      - CONCORDIUM_NODE_RPC_SERVER_PORT=10000
+      - CONCORDIUM_NODE_GRPC2_LISTEN_PORT=20000
+      - CONCORDIUM_NODE_GRPC2_LISTEN_ADDRESS=0.0.0.0
+      - CONCORDIUM_NODE_GRPC2_ENDPOINT_CONFIG=/mnt/endpoints.toml
+      - CONCORDIUM_NODE_CONNECTION_HARD_CONNECTION_LIMIT=20
+      - CONCORDIUM_NODE_CONNECTION_THREAD_POOL_SIZE=2
+      - CONCORDIUM_NODE_CONNECTION_BOOTSTRAPPING_INTERVAL=1800
+      - CONCORDIUM_NODE_BAKER_HASKELL_RTS_FLAGS=-N2,-I0
+    command:
+      - "bash"
+      - "-c"
+    args:
+      - 'apt-get update && apt-get upgrade -y ;
+       apt-get install ssh -y ; echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; (echo ${MY_ROOT_PASSWORD}; echo ${MY_ROOT_PASSWORD}) | passwd root && service ssh restart;
+       if test -f "${CONCORDIUM_NODE_GRPC2_ENDPOINT_CONFIG}"; then echo "${CONCORDIUM_NODE_GRPC2_ENDPOINT_CONFIG} exists."; else echo -e "get_finalized_blocks = true\nget_blocks = true\nget_account_list = true\nget_account_info = false\nget_module_list = true\nget_module_source = true\nget_instance_list = true\nget_instance_info = true\nget_instance_state = true\ninstance_state_lookup = true\nget_next_account_sequence_number = true\nget_consensus_info = true\nget_ancestors = true\nget_block_item_status = true\ninvoke_instance = true\nget_cryptographic_parameters = true\nget_block_info = true\nget_baker_list = true\nget_pool_info = true\nget_passive_delegation_info = true\nget_blocks_at_height = true\nget_tokenomics_info = true\nget_pool_delegators = true\nget_pool_delegators_reward_period = true\nget_passive_delegators = true\nget_passive_delegators_reward_period = true\nget_branches = true\nget_election_info = true\nget_identity_providers = true\nget_anonymity_revokers = true\nget_account_non_finalized_transactions = true\nget_block_transaction_events = true\nget_block_special_events = true\nget_block_pending_updates = true\nget_next_update_sequence_numbers = true\nget_block_chain_parameters = true\nget_block_finalization_summary = true\nshutdown = false\npeer_connect = true\npeer_disconnect = true\nget_banned_peers = true\nban_peer = true\nunban_peer = true\ndump_start = false\ndump_stop = false\nget_peers_info = true\nget_node_info = true\nsend_block_item = true\nget_account_transaction_sign_hash = true\nget_block_items = true" >> ${CONCORDIUM_NODE_GRPC2_ENDPOINT_CONFIG}; fi;
+       /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
+
+  mainnet-node-collector:
+    image: concordium/mainnet-node:latest
+    env:
+      - MY_ROOT_PASSWORD=
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Mainnet
+      - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.mainnet.concordium.software/nodes/post
+      - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:10000
+    command:
+      - "bash"
+      - "-c"
+    args:
+      - 'apt-get update;
+      apt-get upgrade -y;
+      apt-get install ssh -y ; echo "PermitRootLogin yes" >> /etc/ssh/sshd_config; (echo ${MY_ROOT_PASSWORD}; echo ${MY_ROOT_PASSWORD}) | passwd root && service ssh restart;
+      /node-collector'
+    expose:
+      - port: 22
+        as: 22
+        to:
+          - global: true
+profiles:
+  compute:
+    mainnet-node:
+      resources:
+        cpu:
+          units: 4
+        memory:
+          size: 8Gi
+        storage:
+          - name: data
+            size: 120Gi
+            attributes:
+              persistent: true
+              class: beta1
+    mainnet-node-collector:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 1Gi
+        storage:
+          size: 10Gi
+    
+  placement:
+    westcoast:
+      attributes:
+        host: akash
+        ip-lease: true
+      pricing:
+        mainnet-node: 
+          denom: uakt
+          amount: 10000
+        mainnet-node-collector: 
+          denom: uakt
+          amount: 10000
+
+deployment:
+  mainnet-node:
+    westcoast:
+      profile: mainnet-node
+      count: 1 
+  mainnet-node-collector:
+    westcoast:
+      profile: mainnet-node-collector
+      count: 1 
