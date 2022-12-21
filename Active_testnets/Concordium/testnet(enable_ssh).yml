@@ -1,5 +1,10 @@
 ---
 version: '2'
+
+endpoints:
+ grpc2:
+   kind: ip
+
 services:
   testnet-node:
     image: concordium/testnet-node:latest
@@ -20,7 +25,7 @@ services:
         as: 20001
         to:
           - global: true
-          - service: testnet-node-collector
+            ip: "grpc2"
       - port: 8889
         as: 8889
         to:
@@ -28,8 +33,8 @@ services:
     env:
       - MY_ROOT_PASSWORD=
       - CONCORDIUM_NODE_LISTEN_PORT=8889
-      - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=20
-      - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=20
+      - CONCORDIUM_NODE_CONNECTION_DESIRED_NODES=10
+      - CONCORDIUM_NODE_CONNECTION_MAX_ALLOWED_NODES=10
       - CONCORDIUM_NODE_RPC_SERVER_ADDR=0.0.0.0
       - CONCORDIUM_NODE_RPC_SERVER_PORT=10001
       - CONCORDIUM_NODE_GRPC2_LISTEN_PORT=20001
@@ -52,7 +57,7 @@ services:
     image: concordium/testnet-node:latest
     env:
       - MY_ROOT_PASSWORD=
-      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-2
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
       - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
@@ -74,12 +79,12 @@ profiles:
     testnet-node:
       resources:
         cpu:
-          units: 2
+          units: 4
         memory:
           size: 4Gi
         storage:
           - name: data
-            size: 30Gi
+            size: 60Gi
             attributes:
               persistent: true
               class: beta1
@@ -90,12 +95,13 @@ profiles:
         memory:
           size: 1Gi
         storage:
-          size: 5Gi
+          size: 10Gi
     
   placement:
     westcoast:
       attributes:
         host: akash
+        ip-lease: true
       pricing:
         testnet-node: 
           denom: uakt
