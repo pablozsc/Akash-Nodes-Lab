@@ -2,6 +2,8 @@
 version: '2'
 
 endpoints:
+ grpc1:
+   kind: ip
  grpc2:
    kind: ip
 
@@ -13,14 +15,11 @@ services:
         data:
           mount: /mnt
     expose:
-      - port: 22
-        as: 22
-        to:
-          - global: true
       - port: 10001
         as: 10001
         to:
-          - service: testnet-node-collector
+          - global: true
+            ip: "grpc1"
       - port: 20001
         as: 20001
         to:
@@ -60,7 +59,7 @@ services:
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
-      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://x.x.x.x-node:10001
     command:
       - "bash"
       - "-c"
@@ -87,7 +86,7 @@ profiles:
             size: 60Gi
             attributes:
               persistent: true
-              class: beta1
+              class: beta3
     testnet-node-collector:
       resources:
         cpu:
