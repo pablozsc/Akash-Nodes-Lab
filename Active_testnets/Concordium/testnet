@@ -66,7 +66,7 @@ profiles:
         cpu:
           units: 4
         memory:
-          size: 4Gi
+          size: 8Gi
         storage:
           - name: data
             size: 60Gi
