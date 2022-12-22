@@ -2,6 +2,8 @@
 version: '2'
 
 endpoints:
+ grpc1:
+   kind: ip
  grpc2:
    kind: ip
 
@@ -20,7 +22,8 @@ services:
       - port: 10000
         as: 10000
         to:
-          - service: mainnet-node-collector
+          - global: true
+            ip: "grpc1"
       - port: 20000
         as: 20000
         to:
@@ -60,7 +63,7 @@ services:
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Mainnet
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.mainnet.concordium.software/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
-      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:10000
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://x.x.x.x:10000
     command:
       - "bash"
       - "-c"
@@ -87,7 +90,7 @@ profiles:
             size: 120Gi
             attributes:
               persistent: true
-              class: beta1
+              class: beta3
     mainnet-node-collector:
       resources:
         cpu:
