@@ -55,7 +55,7 @@ services:
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Concordium-Akash-Node-Testnet-upd
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
-      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://x.x.x.x:10001
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://testnet-node:10001
     args:
       - '/node-collector'
 
