@@ -14,7 +14,7 @@ services:
           mount: /mnt
     expose:
       - port: 10001
-        as: 10001
+        proto: tcp
         to:
           - service: testnet-node-collector
       - port: 20001
