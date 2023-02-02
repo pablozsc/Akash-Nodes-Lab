@@ -2,7 +2,7 @@
 version: '2'
 services:
   testnet-node:
-    image: concordium/testnet-node:latest
+    image: concordium/testnet-node:5.1.3-0
     expose:
       - port: 10001
         proto: tcp
@@ -36,7 +36,7 @@ services:
       - "--bootstrap-node=bootstrap.testnet.concordium.com:8888"
 
   testnet-node-collector:
-    image: concordium/testnet-node:latest
+    image: concordium/testnet-node:5.1.3-0
     env:
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=<YOUR_NODE_NAME>
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.testnet.concordium.com/nodes/post
