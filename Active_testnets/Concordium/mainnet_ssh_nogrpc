@@ -3,7 +3,7 @@ version: '2'
 
 services:
   mainnet-node:
-    image: concordium/mainnet-node:latest
+    image: concordium/mainnet-node:5.2.4-0
     params:
       storage:
         data:
@@ -17,12 +17,12 @@ services:
         as: 10000
         proto: tcp
         to:
-          - service: testnet-node-collector
+          - service: mainnet-node-collector
       - port: 20000
         as: 20000
         proto: tcp
         to:
-          - service: testnet-node-collector
+          - service: mainnet-node-collector
       - port: 8888
         as: 8888
         to:
@@ -49,7 +49,7 @@ services:
        /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
 
   mainnet-node-collector:
-    image: concordium/mainnet-node:latest
+    image: concordium/mainnet-node:5.2.4-0
     env:
       - MY_ROOT_PASSWORD=
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=
