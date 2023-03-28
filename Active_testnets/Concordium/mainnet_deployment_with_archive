@@ -67,7 +67,7 @@ profiles:
             size: 120Gi
             attributes:
               persistent: true
-              class: beta2
+              class: beta1
     mainnet-node-collector:
       resources:
         cpu:
