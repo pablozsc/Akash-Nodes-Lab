@@ -39,7 +39,7 @@ services:
       - "bash"
       - "-c"
     args:
-      - 'apt-get update && apt-get upgrade -y; apt install wget -y; wget http://pablo-snapshot.ddns.net/26-03-2023.tar.gz; mkdir /mnt/database-v4; tar -C /mnt/database-v4/ -xvf 26-03-2023.tar.gz; rm 26-03-2023.tar.gz; /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
+      - 'apt-get update && apt-get upgrade -y; apt install nano -y; apt install wget -y; wget http://pablo-snapshot.ddns.net/26-03-2023.tar.gz; mkdir /mnt/database-v4; tar -C /mnt/database-v4/ -xvf 26-03-2023.tar.gz; rm 26-03-2023.tar.gz; /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
 
   mainnet-node-collector:
     image: concordium/mainnet-node:5.2.4-0
