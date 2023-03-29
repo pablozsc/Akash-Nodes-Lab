@@ -39,7 +39,7 @@ services:
       - "bash"
       - "-c"
     args:
-      - 'apt-get update && apt-get upgrade -y; apt-get install nano -y; /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
+      - '/concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
 
   mainnet-node-collector:
     image: concordium/mainnet-node:5.2.4-0
