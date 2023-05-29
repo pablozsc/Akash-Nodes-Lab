@@ -3,7 +3,7 @@ version: '2'
 
 services:
   mainnet-node:
-    image: concordium/mainnet-node:5.2.4-0
+    image: concordium/mainnet-node:5.3.2-0
     params:
       storage:
         data:
@@ -42,12 +42,12 @@ services:
       - 'apt-get update && apt-get upgrade -y; apt install nano -y; /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
 
   mainnet-node-collector:
-    image: concordium/mainnet-node:5.2.4-0
+    image: concordium/mainnet-node:5.3.2-0
     env:
       - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Akash_Mainnet
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.mainnet.concordium.software/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
-      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:10000
+      - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:20000
     command:
       - "bash"
       - "-c"
