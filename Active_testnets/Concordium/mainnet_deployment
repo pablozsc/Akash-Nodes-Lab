@@ -2,7 +2,7 @@
 version: "2.0"
 services:
   mainnet-node:
-    image: concordium/mainnet-node:5.4.2-0
+    image: concordium/mainnet-node:6.1.7-0
     params:
       storage:
         data:
@@ -34,9 +34,15 @@ services:
       - 'apt-get update && apt-get upgrade -y; apt install nano -y; /concordium-node --config-dir=/mnt/ --data-dir=/mnt/ --genesis-data-file=/mainnet-genesis.dat --bootstrap-node=bootstrap.mainnet.concordium.software:8888'
 
   mainnet-node-collector:
-    image: concordium/mainnet-node:5.4.2-0
+    image: concordium/mainnet-node:6.1.7-0
+    params:
+    expose:
+      - port: 20000
+        as: 20000
+        to:
+          - global: true
     env:
-      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=
+      - CONCORDIUM_NODE_COLLECTOR_NODE_NAME=Akash_test
       - CONCORDIUM_NODE_COLLECTOR_URL=https://dashboard.mainnet.concordium.software/nodes/post
       - CONCORDIUM_NODE_COLLECTOR_COLLECT_INTERVAL=5000
       - CONCORDIUM_NODE_COLLECTOR_GRPC_HOST=http://mainnet-node:20000
@@ -59,7 +65,7 @@ profiles:
             size: 150Gi
             attributes:
               persistent: true
-              class: beta3
+              class: beta2
     mainnet-node-collector:
       resources:
         cpu:
