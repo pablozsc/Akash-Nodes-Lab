@@ -1,6 +1,5 @@
 ---
-version: '2'
-
+version: "2.0"
 services:
   mainnet-node:
     image: concordium/mainnet-node:5.4.2-0
